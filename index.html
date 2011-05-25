@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="description" content="">
+		<meta name="designer" content="Paul Straw">
+		<meta name="developer" content="Paul Straw">
+		<meta name="viewport" content="width=device-width; initial-scale=1 maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 326dpi)" href="img/icon-114.png">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 132dpi)" href="img/icon-72.png">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 163dpi)" href="img/icon-57.png">
+
+		<title>Crafty</title>
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+		<link rel="shortcut icon" href="img/favicon.png">
+		<link rel="stylesheet/less" type="text/css" href="css/screen.less">
+
+		<script src="js/jquery.js"></script>
+		<script src="js/less.js"></script>
+		<script src="js/underscore.js"></script>
+		<script src="js/sha256.js"></script>
+		<script src="js/iscroll.js"></script>
+		<script src="js/main.js"></script>
+	</head>
+
+	<body>
+		<header>
+			<h1></h1>
+		</header>
+
+		<div id="content">
+
+		</div>
+
+		<footer>
+			<ul>
+				<li class="Server">Server</li>
+				<li class="Chat">Chat</li>
+				<li class="Players">Players</li>
+				<li class="Give">Give</li>
+			</ul>
+		</footer>
+
+		<script type="text/template" id="Server">
+			<div>
+				<ul id="serverCommands">
+					<li id="version">
+						<strong><%= version %></strong>
+					</li>
+					<li>
+						Set time to:
+						<select id="newTime">
+							<option value="23500">Dawn</option>
+							<option value="0">Day</option>
+							<option value="12000">Dusk</option>
+							<option value="15000">Night</option>
+						</select>
+						<button data-opts="setTime" data-method="runConsoleCommand">Set</button>
+					</li>
+					<li>
+						Map saving:
+						<button data-method="saveOff">Disable</button>
+						<button data-method="saveOn">Enable</button>
+						<button data-method="saveMap">Save Now</button>
+				</ul>
+
+				<button id="restartServer" data-opts="restartServer" data-method="runConsoleCommand">Restart Server</button>
+			</div>
+		</script>
+
+		<script type="text/template" id="Chat">
+			<div>
+				<ul id="chatHistory">
+
+				</ul>
+				<div id="chatBox">
+					<input type="text">
+				</div>
+			</div>
+		</script>
+
+		<script type="text/template" id="Players">
+			<div id="scroller">
+				<ul>
+					<% for (player in players) { %>
+						<li>
+							<section class="player group" data-playerName="<%= players[player].name %>">
+								<div class="canvasHolder"></div>
+								<span class="name"><%= players[player].name %></span>
+							</section>
+							<section class="actions">
+								<button data-opts="op|<%= players[player].name %>" data-method="opPlayer">Op</button>
+								<button data-opts="deop|<%= players[player].name %>" data-method="deopPlayer">Deop</button>
+								<button data-opts="teleport|<%= players[player].name %>" data-method="teleport">Teleport…</button>
+								<button data-opts="kick|<%= players[player].name %>" data-method="kickPlayer">Kick</button>
+							</section>
+						</li>
+					<% } %>
+				</ul>
+			</div>
+		</script>
+
+		<script type="text/template" id="Give">
+			<div id="scroller">
+				<ul>
+					<li class="filter">
+						<input type="search" placeholder="Filter Items…">
+						<button id="repeatGive" data-opts="repeatGive" data-method="givePlayerItemWithData">Repeat Give</button>
+					</li>
+					<% for (item in items) { %>
+						<li<%= items[item].special ? ' class="' + items[item].special + '"' : '' %> data-value="<%= items[item].value %>" data-damage="<%= items[item].damage %>">
+							<%= items[item].name %>
+						</li>
+					<% } %>
+				</ul>
+			</div>
+		</script>
+	</body>
+</html>

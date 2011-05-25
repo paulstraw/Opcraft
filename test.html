@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="description" content="JSONAPI WebSocket Test Page">
+
+		<title>JSONAPI WebSocket Test Page</title>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<script>
+			var socket,
+				user = 'user',
+				pass = 'pass';
+
+			function SHA256(a){function p(a){var b=c?"0123456789ABCDEF":"0123456789abcdef",d="";for(var e=0;e<a.length*4;e++)d+=b.charAt(a[e>>2]>>(3-e%4)*8+4&15)+b.charAt(a[e>>2]>>(3-e%4)*8&15);return d}function o(a){a=a.replace(/\r\n/g,"\n");var b="";for(var c=0;c<a.length;c++){var d=a.charCodeAt(c);d<128?b+=String.fromCharCode(d):d>127&&d<2048?(b+=String.fromCharCode(d>>6|192),b+=String.fromCharCode(d&63|128)):(b+=String.fromCharCode(d>>12|224),b+=String.fromCharCode(d>>6&63|128),b+=String.fromCharCode(d&63|128))}return b}function n(a){var c=[],d=(1<<b)-1;for(var e=0;e<a.length*b;e+=b)c[e>>5]|=(a.charCodeAt(e/b)&d)<<24-e%32;return c}function m(a,b){var c=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],e=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225],f=Array(64),m,n,o,p,q,r,s,t,u,v,w,x;a[b>>5]|=128<<24-b%32,a[(b+64>>9<<4)+15]=b;for(var u=0;u<a.length;u+=16){m=e[0],n=e[1],o=e[2],p=e[3],q=e[4],r=e[5],s=e[6],t=e[7];for(var v=0;v<64;v++)v<16?f[v]=a[v+u]:f[v]=d(d(d(l(f[v-2]),f[v-7]),k(f[v-15])),f[v-16]),w=d(d(d(d(t,j(q)),g(q,r,s)),c[v]),f[v]),x=d(i(m),h(m,n,o)),t=s,s=r,r=q,q=d(p,w),p=o,o=n,n=m,m=d(w,x);e[0]=d(m,e[0]),e[1]=d(n,e[1]),e[2]=d(o,e[2]),e[3]=d(p,e[3]),e[4]=d(q,e[4]),e[5]=d(r,e[5]),e[6]=d(s,e[6]),e[7]=d(t,e[7])}return e}function l(a){return e(a,17)^e(a,19)^f(a,10)}function k(a){return e(a,7)^e(a,18)^f(a,3)}function j(a){return e(a,6)^e(a,11)^e(a,25)}function i(a){return e(a,2)^e(a,13)^e(a,22)}function h(a,b,c){return a&b^a&c^b&c}function g(a,b,c){return a&b^~a&c}function f(a,b){return a>>>b}function e(a,b){return a>>>b|a<<32-b}function d(a,b){var c=(a&65535)+(b&65535),d=(a>>16)+(b>>16)+(c>>16);return d<<16|c&65535}var b=8,c=0;a=o(a);return p(m(n(a),a.length*b))}
+
+			function generateKey(method) {
+				return SHA256(user + method + pass);
+			}
+
+			function openChatSocket() {
+				socket = new WebSocket('ws://livingroommini.local:20061');
+
+				socket.onopen = function() {
+					//socket.send('/api/subscribe?source=chat&key=' + generateKey('chat'));
+					//socket.send('/api/subscribe?source=connections&key=' + generateKey('connections'));
+					//socket.send('/api/subscribe?source=console&key=' + generateKey('console'));
+					socket.send('/api/subscribe?source=all&key=' + generateKey('all'));
+				};
+
+				socket.onmessage = function(e) {
+					console.log(e);
+				}
+			}
+
+			openChatSocket();
+		</script>
+	</head>
+
+	<body>
+
+	</body>
+</html>
