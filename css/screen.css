@@ -1,0 +1,31 @@
+#slider {
+	position: relative;
+	width: 320px;
+	height: 480px;
+	background: url(../img/nivo/loading.gif) no-repeat 50% 50%;
+}
+
+#slider img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: none;
+}
+
+.nivo-directionNav a {
+	display: block;
+	width: 30px;
+	height: 30px;
+	background: url(../img/nivo/arrows.png) no-repeat;
+	text-indent: -9999px;
+	border: 0;
+}
+
+a.nivo-nextNav {
+	background-position:-30px 0;
+	right: 3px;
+}
+
+a.nivo-prevNav {
+	left: 3px;
+}
