@@ -9,7 +9,7 @@
 		<meta name="viewport" content="width=device-width; initial-scale=1">
 		<!-- Add "maximum-scale=1" to fix the weird iOS auto-zoom bug on orientation changes. -->
 
-		<title></title>
+		<title>Opcraft &mdash; The best way to manage your CraftBukkit server</title>
 
 		<!--[if lt IE 9]>
 			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -19,6 +19,9 @@
 		<link rel="stylesheet" media="screen, projection" href="css/screen.css">
 		<link rel="stylesheet" media="screen, projection" href="css/nivo.css">
 
+		<script type="text/javascript" src="http://use.typekit.com/ars2czg.js"></script>
+		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
 		<script src="js/nivo.js"></script>
 		<script src="js/main.js"></script>
@@ -26,28 +29,64 @@
 
 	<body>
 		<header>
-			<h1>Opcraft</h1>
-			<h2>The best way to manage your Bukkit server.
+			<div class="inner">
+				<h1>Opcraft</h1>
+				<h2>The best way to manage your CraftBukkit server.
+			</div>
 		</header>
 
-		<div id="main">
-			<section id="about">
+		<div id="main" class="group">
+			<div class="inner">
+				<div id="about">
+					<section id="desc">
+						<h3>About</h3>
 
-			</section>
+						<p>Opcraft is a little web app that helps you manage your CraftBukkit-powered Minecraft server. It has all the features you'd expect, including basic server management, user control, and item giving, as well as a real-time chat/console mode. It's free and <a href="https://github.com/paulstraw/Opcraft">open source</a>, so you can even add your own awesome features.</p>
+					</section>
 
-			<div id="slider">
-				<img src="img/screens/players.png">
-				<img src="img/screens/give.png">
-				<img src="img/screens/server.png">
+					<section id="requirements">
+						<h3>Requirements</h3>
+
+						<ul>
+							<li>A <a href="http://minecraft.net">Minecraft</a> server (powered by <a href="http://bukkit.org">CraftBukkit</a>)
+							<li>The <a href="http://forums.bukkit.org/threads/admn-info-jsonapi-v1-6-2-json-http-and-socket-api-for-controlling-a-server-798.14270/">JSONAPI</a> Bukkit plugin</li>
+							<li>A great web browser. <a href="http://google.com/chrome">Google Chrome</a> and <a href="http://www.apple.com/iphone/features/safari.html">Mobile Safari</a> are my personal favorites, but anything that supports <a href="http://en.wikipedia.org/wiki/WebSockets">WebSockets</a> should work great.</li>
+							<li>There is no step 3! (or whatever) If things aren't working, <a href="mailto:paulstraw@paulstraw.com">let me know</a>.</li>
+						</ul>
+					</section>
+
+					<a id="tryIt" href="app">Try Opcraft Now!</a>
+
+					<section id="socialCrap">
+						<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="paulstraw">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+
+						<iframe src="http://www.facebook.com/plugins/like.php?app_id=307821841510&amp;href&amp;send=false&amp;layout=button_count&amp;width=200&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font=lucida+grande&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:21px;" allowTransparency="true"></iframe>
+					</section>
+				</div>
+
+				<div id="iPhone">
+					<div id="slider">
+						<img src="img/screens/players.png">
+						<img src="img/screens/give.png">
+						<img src="img/screens/chat.png">
+						<img src="img/screens/server.png">
+						<img src="img/screens/givedialog.png">
+						<img src="img/screens/spring.png">
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<footer>
-			<ul>
-				<li>Opcraft is made by <a href="http://paulstraw.com">Paul Straw</a></li>
-				<li>Minecraft is made by <a href="http://mojang.com">Mojang</a></li>
-				<li>Bukkit is made by the <a href="http://bukkit.org/">Bukkit team</a></li>
-				<li>Everyone owns the stuff they made. DBAA.</li>
+			<div class="inner">
+				<ul>
+					<li>Opcraft is made by <a href="http://paulstraw.com">Paul Straw</a></li>
+					<li>Minecraft is made by <a href="http://mojang.com">Mojang</a></li>
+					<li>Bukkit is made by the <a href="http://bukkit.org/">Bukkit team</a></li>
+					<li>JSONAPI is made by <a href="https://github.com/alecgorge">Alec Gorge</a>
+					<li>Everyone owns the stuff they made. DBAA.</li>
+				</ul>
+			</div>
 		<footer>
 	</body>
 </html>
