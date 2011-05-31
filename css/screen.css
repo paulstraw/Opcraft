@@ -17,6 +17,20 @@ body {
 	background: #e6eaec;
 }
 
+html, body {
+	height: 100%;
+	min-height: 100%;
+}
+
+/*Opera Fix*/
+body:before {
+	content:"";
+	height:100%;
+	float:left;
+	width:0;
+	margin-top:-32767px;/
+}
+
 a {
 	-webkit-tap-highlight-color: #FF5E99;
 }
@@ -118,6 +132,14 @@ header {
 	border-bottom: 1px solid #111;
 }
 
+footer {
+	position: relative;
+	clear: both;
+	padding-bottom: 3px;
+	font-size: 12px;
+	line-height: 1;
+}
+
 footer a {
 	color: rgb(167,207,223);
 }
@@ -125,7 +147,7 @@ footer a {
 #main {
 	padding-top: 12px;
 	border-top: 1px solid #fff;
-	border-bottom: 1px solid #111;
+	overflow: auto;
 }
 
 h1 {
@@ -139,9 +161,13 @@ h2 {
 }
 
 a {
-	color: rgb(47,87,103);
+	color: #0F3F76;
 	font-weight: bold;
 	text-decoration: none;
+}
+
+p {
+	margin: 6px auto;
 }
 
 #about {
@@ -170,7 +196,7 @@ a {
 	display: block;
 	width: 220px;
 	text-align: center;
-	margin: 24px auto 36px;
+	margin: 24px auto 48px;
 
 	text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
 	-webkit-text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
@@ -197,4 +223,25 @@ a {
 	background: -ms-linear-gradient(top, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
 	filter: ~"progid:DXImageTransform.Microsoft.gradient( startColorstr='#a7cfdf', endColorstr='#23538a',GradientType=0 )";
 	background: linear-gradient(top, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
+}
+
+#wrapper {
+	min-height: 100%;
+}
+
+#socialCrap {
+	width: 620px;
+}
+
+#tumblrButton {
+	line-height: 9999px;
+	margin-right: 18px;
+}
+
+#fb-root {
+	display: inline;
+}
+
+.fb_ltr {
+	top: -4px;
 }
