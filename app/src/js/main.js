@@ -499,7 +499,7 @@ $(document).ready(function(){
 				height: $(window).height() - 89
 			});
 
-			if (scroller) a
+			if (scroller) scroller.refresh();
 		}
 		resizeContent();
 

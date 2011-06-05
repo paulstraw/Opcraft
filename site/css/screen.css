@@ -112,6 +112,7 @@ a.nivo-prevNav {
 header, footer {
 	color: #f4f4f4;
 	border-top: 1px solid #777;
+	min-width: 1000px;
 
 	text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
 	-webkit-text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
@@ -145,9 +146,9 @@ footer a {
 }
 
 #main {
+	min-width: 1000px;
 	padding-top: 12px;
 	border-top: 1px solid #fff;
-	overflow: auto;
 }
 
 h1 {

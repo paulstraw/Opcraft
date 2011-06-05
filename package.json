@@ -1,0 +1,12 @@
+{
+	"name": "Opcraft",
+	"buildr": {
+		"compress": false,
+		"bundle": true,
+		"check": false,
+		"directories": {
+			"out": "./app/dist",
+			"src": "./app/src"
+		}
+	}
+}
