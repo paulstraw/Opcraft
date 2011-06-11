@@ -20,17 +20,9 @@
 		<![endif]-->
 
 		<link rel="shortcut icon" href="img/favicon.png">
-		<link rel="stylesheet/less" type="text/css" href="css/screen.less">
+		<link rel="stylesheet" media="screen, projection" href="screen.css">
 
-		<script src="js/jquery.js"></script>
-		<script src="js/less.js"></script>
-		<script src="js/json2.js"></script>
-		<script src="js/sha256.js"></script>
-		<script src="js/jsonapi.js"></script>
-		<script src="js/underscore.js"></script>
-		<script src="js/iscroll.js"></script>
-		<script src="js/fancybox.js"></script>
-		<script src="js/main.js"></script>
+		<script src="opcraft.js"></script>
 	</head>
 
 	<body>
@@ -39,7 +31,7 @@
 		</header>
 
 		<div id="content">
-			lazy: <button onclick="delete localStorage.mcApiUser; delete localStorage.mcApiPass">Clear</button>
+			<button onclick="delete localStorage.mcApiUser; delete localStorage.mcApiPass">Looks like there was a problem.<br>Click here to try entering your server info again</button>
 		</div>
 
 		<footer>

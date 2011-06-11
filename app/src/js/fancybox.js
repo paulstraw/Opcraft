@@ -15,7 +15,7 @@
  *   http://www.gnu.org/licenses/gpl.html
  */
 
-;(function($) {
+(function($) {
 	var tmp, loading, overlay, wrap, outer, content, close, title, nav_left, nav_right,
 
 		selectedIndex = 0, selectedOpts = {}, selectedArray = [], currentIndex = 0, currentOpts = {}, currentArray = [],
@@ -373,7 +373,7 @@
 			if (wrap.is(":visible")) {
 				$( close.add( nav_left ).add( nav_right ) ).hide();
 
-				pos = wrap.position(),
+				pos = wrap.position();
 
 				start_pos = {
 					top	 : pos.top,
@@ -889,7 +889,7 @@
 			return;
 		}
 
-		pos = parseInt(pos);
+		pos = parseInt(pos, 10);
 
 		selectedArray = currentArray;
 
@@ -1027,8 +1027,8 @@
 		wrap
 			.stop()
 			.animate({
-				'top' : parseInt(Math.max(view[3] - 20, view[3] + ((view[1] - content.height() - 40) * 0.5) - currentOpts.padding)),
-				'left' : parseInt(Math.max(view[2] - 20, view[2] + ((view[0] - content.width() - 40) * 0.5) - currentOpts.padding))
+				'top' : parseInt(Math.max(view[3] - 20, view[3] + ((view[1] - content.height() - 40) * 0.5) - currentOpts.padding), 10),
+				'left' : parseInt(Math.max(view[2] - 20, view[2] + ((view[0] - content.width() - 40) * 0.5) - currentOpts.padding), 10)
 			}, typeof arguments[0] == 'number' ? arguments[0] : 200);
 	};
 

@@ -1,1 +1,961 @@
-(function(){function p(r,m){var s=this,t=document,u,q;s.wrapper=typeof r=="object"?r:t.getElementById(r);s.wrapper.style.overflow="hidden";s.scroller=s.wrapper.children[0];s.options={HWTransition:true,HWCompositing:true,hScroll:true,vScroll:true,hScrollbar:true,vScrollbar:true,fixedScrollbar:n,fadeScrollbar:(o&&k)||!j,hideScrollbar:o||!j,scrollbarClass:"",bounce:k,bounceLock:false,momentum:k,lockDirection:true,zoom:false,zoomMin:1,zoomMax:4,snap:false,pullToRefresh:false,pullDownLabel:["Pull down to refresh...","Release to refresh...","Loading..."],pullUpLabel:["Pull up to refresh...","Release to refresh...","Loading..."],onPullDown:function(){},onPullUp:function(){},onScrollStart:null,onScrollEnd:null,onZoomStart:null,onZoomEnd:null,checkDOMChange:false};for(q in m){s.options[q]=m[q]}s.options.HWCompositing=s.options.HWCompositing&&a;s.options.HWTransition=s.options.HWTransition&&a;if(s.options.HWCompositing){s.scroller.style.cssText+="-webkit-transition-property:-webkit-transform;-webkit-transform-origin:0 0;-webkit-transform:"+b+"0,0"+h}else{s.scroller.style.cssText+="-webkit-transition-property:top,left;-webkit-transform-origin:0 0;top:0;left:0"}if(s.options.HWTransition){s.scroller.style.cssText+="-webkit-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);-webkit-transition-duration:0;"}s.options.hScrollbar=s.options.hScroll&&s.options.hScrollbar;s.options.vScrollbar=s.options.vScroll&&s.options.vScrollbar;s.pullDownToRefresh=s.options.pullToRefresh=="down"||s.options.pullToRefresh=="both";s.pullUpToRefresh=s.options.pullToRefresh=="up"||s.options.pullToRefresh=="both";if(s.pullDownToRefresh){u=t.createElement("div");u.className="iScrollPullDown";u.innerHTML='<span class="iScrollPullDownIcon"></span><span class="iScrollPullDownLabel">'+s.options.pullDownLabel[0]+"</span>\n";s.scroller.insertBefore(u,s.scroller.children[0]);s.options.bounce=true;s.pullDownEl=u;s.pullDownLabel=u.getElementsByTagName("span")[1]}if(s.pullUpToRefresh){u=t.createElement("div");u.className="iScrollPullUp";u.innerHTML='<span class="iScrollPullUpIcon"></span><span class="iScrollPullUpLabel">'+s.options.pullUpLabel[0]+"</span>\n";s.scroller.appendChild(u);s.options.bounce=true;s.pullUpEl=u;s.pullUpLabel=u.getElementsByTagName("span")[1]}s.refresh();s._bind(l,window);s._bind(f);if(i&&s.options.zoom){s._bind("gesturestart");s.scroller.style.webkitTransform=s.scroller.style.webkitTransform+" scale(1)"}if(!j){s._bind("mousewheel")}if(s.options.checkDOMChange){s.DOMChangeInterval=setInterval(function(){s._checkSize()},250)}}p.prototype={x:0,y:0,currPageX:0,currPageY:0,pagesX:[],pagesY:[],offsetBottom:0,offsetTop:0,scale:1,lastScale:1,contentReady:true,handleEvent:function(q){var m=this;switch(q.type){case f:m._start(q);break;case e:m._move(q);break;case g:case c:m._end(q);break;case"webkitTransitionEnd":m._transitionEnd(q);break;case l:m._resize();break;case"gesturestart":m._gestStart(q);break;case"gesturechange":m._gestChange(q);break;case"gestureend":case"gesturecancel":m._gestEnd(q);break;case"mousewheel":m._wheel(q);break}},_scrollbar:function(m){var r=this,s=document,q;if(!r[m+"Scrollbar"]){if(r[m+"ScrollbarWrapper"]){r[m+"ScrollbarIndicator"].style.webkitTransform="";r[m+"ScrollbarWrapper"].parentNode.removeChild(r[m+"ScrollbarWrapper"]);r[m+"ScrollbarWrapper"]=null;r[m+"ScrollbarIndicator"]=null}return}if(!r[m+"ScrollbarWrapper"]){q=s.createElement("div");if(r.options.scrollbarClass){q.className=r.options.scrollbarClass+m.toUpperCase()}else{q.style.cssText="position:absolute;z-index:100;"+(m=="h"?"height:7px;bottom:1px;left:2px;right:7px":"width:7px;bottom:7px;top:2px;right:1px")}q.style.cssText+="pointer-events:none;-webkit-transition-property:opacity;-webkit-transition-duration:"+(r.options.fadeScrollbar?"350ms":"0")+";overflow:hidden;opacity:"+(r.options.hideScrollbar?"0":"1");r.wrapper.appendChild(q);r[m+"ScrollbarWrapper"]=q;q=s.createElement("div");if(!r.options.scrollbarClass){q.style.cssText="position:absolute;z-index:100;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);-webkit-background-clip:padding-box;-webkit-box-sizing:border-box;"+(m=="h"?"height:100%;-webkit-border-radius:4px 3px;":"width:100%;-webkit-border-radius:3px 4px;")}q.style.cssText+="pointer-events:none;-webkit-transition-property:-webkit-transform;-webkit-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);-webkit-transition-duration:0;-webkit-transform:"+b+"0,0"+h;r[m+"ScrollbarWrapper"].appendChild(q);r[m+"ScrollbarIndicator"]=q}if(m=="h"){r.hScrollbarSize=r.hScrollbarWrapper.clientWidth;r.hScrollbarIndicatorSize=d.max(d.round(r.hScrollbarSize*r.hScrollbarSize/r.scrollerW),8);r.hScrollbarIndicator.style.width=r.hScrollbarIndicatorSize+"px";r.hScrollbarMaxScroll=r.hScrollbarSize-r.hScrollbarIndicatorSize;r.hScrollbarProp=r.hScrollbarMaxScroll/r.maxScrollX}else{r.vScrollbarSize=r.vScrollbarWrapper.clientHeight;r.vScrollbarIndicatorSize=d.max(d.round(r.vScrollbarSize*r.vScrollbarSize/r.scrollerH),8);r.vScrollbarIndicator.style.height=r.vScrollbarIndicatorSize+"px";r.vScrollbarMaxScroll=r.vScrollbarSize-r.vScrollbarIndicatorSize;r.vScrollbarProp=r.vScrollbarMaxScroll/r.maxScrollY}r._indicatorPos(m,true)},_resize:function(){var m=this;setTimeout(function(){m.refresh()},0)},_checkSize:function(){var q=this,m,r;if(q.moved||q.zoomed||!q.contentReady){return}m=d.round(q.scroller.offsetWidth*q.scale),r=d.round((q.scroller.offsetHeight-q.offsetBottom-q.offsetTop)*q.scale);if(m==q.scrollerW&&r==q.scrollerH){return}q.refresh()},_pos:function(m,r){var q=this;q.x=q.hScroll?m:0;q.y=q.vScroll?r:0;q.scroller.style.webkitTransform=b+q.x+"px,"+q.y+"px"+h+" scale("+q.scale+")";q._indicatorPos("h");q._indicatorPos("v")},_indicatorPos:function(m,r){var q=this,s=m=="h"?q.x:q.y;if(!q[m+"Scrollbar"]){return}s=q[m+"ScrollbarProp"]*s;if(s<0){s=q.options.fixedScrollbar?0:s+s*3;if(q[m+"ScrollbarIndicatorSize"]+s<9){s=-q[m+"ScrollbarIndicatorSize"]+8}}else{if(s>q[m+"ScrollbarMaxScroll"]){s=q.options.fixedScrollbar?q[m+"ScrollbarMaxScroll"]:s+(s-q[m+"ScrollbarMaxScroll"])*3;if(q[m+"ScrollbarIndicatorSize"]+q[m+"ScrollbarMaxScroll"]-s<9){s=q[m+"ScrollbarIndicatorSize"]+q[m+"ScrollbarMaxScroll"]-8}}}q[m+"ScrollbarWrapper"].style.webkitTransitionDelay="0";q[m+"ScrollbarWrapper"].style.opacity=r&&q.options.hideScrollbar?"0":"1";q[m+"ScrollbarIndicator"].style.webkitTransform=b+(m=="h"?s+"px,0":"0,"+s+"px")+h},_transitionTime:function(q){var m=this;q+="ms";m.scroller.style.webkitTransitionDuration=q;if(m.hScrollbar){m.hScrollbarIndicator.style.webkitTransitionDuration=q}if(m.vScrollbar){m.vScrollbarIndicator.style.webkitTransitionDuration=q}},_start:function(s){var r=this,m=j?s.changedTouches[0]:s,q;r.moved=false;s.preventDefault();if(j&&s.touches.length==2&&r.options.zoom&&i&&!r.zoomed){r.originX=d.abs(s.touches[0].pageX+s.touches[1].pageX-r.wrapperOffsetLeft*2)/2-r.x;r.originY=d.abs(s.touches[0].pageY+s.touches[1].pageY-r.wrapperOffsetTop*2)/2-r.y}r.moved=false;r.distX=0;r.distY=0;r.absDistX=0;r.absDistY=0;r.dirX=0;r.dirY=0;r.returnTime=0;r._transitionTime(0);if(r.options.momentum){if(r.scrollInterval){clearInterval(r.scrollInterval);r.scrollInterval=null}if(r.options.HWCompositing){q=new WebKitCSSMatrix(window.getComputedStyle(r.scroller,null).webkitTransform);if(q.m41!=r.x||q.m42!=r.y){r._unbind("webkitTransitionEnd");r._pos(q.m41,q.m42)}}else{q=window.getComputedStyle(r.scroller,null);if(r.x+"px"!=q.left||r.y+"px"!=q.top){r._unbind("webkitTransitionEnd");r._pos(q.left.replace(/[^0-9]/g)*1,q.top.replace(/[^0-9]/g)*1)}}}r.scroller.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.66,0.66,1)";if(r.hScrollbar){r.hScrollbarIndicator.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.66,0.66,1)"}if(r.vScrollbar){r.vScrollbarIndicator.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.66,0.66,1)"}r.startX=r.x;r.startY=r.y;r.pointX=m.pageX;r.pointY=m.pageY;r.startTime=s.timeStamp;if(r.options.onScrollStart){r.options.onScrollStart.call(r)}r._bind(e);r._bind(g);r._bind(c)},_move:function(u){if(j&&u.touches.length>1){return}var s=this,q=j?u.changedTouches[0]:u,r=q.pageX-s.pointX,m=q.pageY-s.pointY,v=s.x+r,t=s.y+m;u.preventDefault();s.pointX=q.pageX;s.pointY=q.pageY;if(v>0||v<s.maxScrollX){v=s.options.bounce?s.x+(r/2.4):v>=0||s.maxScrollX>=0?0:s.maxScrollX}if(t>0||t<s.maxScrollY){t=s.options.bounce?s.y+(m/2.4):t>=0||s.maxScrollY>=0?0:s.maxScrollY;if(s.options.pullToRefresh&&s.contentReady){if(s.pullDownToRefresh&&t>s.offsetBottom){s.pullDownEl.className="iScrollPullDown flip";s.pullDownLabel.innerText=s.options.pullDownLabel[1]}else{if(s.pullDownToRefresh&&s.pullDownEl.className.match("flip")){s.pullDownEl.className="iScrollPullDown";s.pullDownLabel.innerText=s.options.pullDownLabel[0]}}if(s.pullUpToRefresh&&t<s.maxScrollY-s.offsetTop){s.pullUpEl.className="iScrollPullUp flip";s.pullUpLabel.innerText=s.options.pullUpLabel[1]}else{if(s.pullUpToRefresh&&s.pullUpEl.className.match("flip")){s.pullUpEl.className="iScrollPullUp";s.pullUpLabel.innerText=s.options.pullUpLabel[0]}}}}if(s.absDistX<4&&s.absDistY<4){s.distX+=r;s.distY+=m;s.absDistX=d.abs(s.distX);s.absDistY=d.abs(s.distY);return}if(s.options.lockDirection){if(s.absDistX>s.absDistY+3){t=s.y;m=0}else{if(s.absDistY>s.absDistX+3){v=s.x;r=0}}}s.moved=true;s._pos(v,t);s.dirX=r>0?-1:r<0?1:0;s.dirY=m>0?-1:m<0?1:0;if(u.timeStamp-s.startTime>300){s.startTime=u.timeStamp;s.startX=s.x;s.startY=s.y}},_end:function(w){if(j&&w.touches.length!=0){return}var u=this,A=j?w.changedTouches[0]:w,x,z,r={dist:0,time:0},m={dist:0,time:0},t=w.timeStamp-u.startTime,y=u.x,v=u.y,q,s;u._unbind(e);u._unbind(g);u._unbind(c);if(u.zoomed){return}if(!u.moved){if(j){if(u.doubleTapTimer&&u.options.zoom){clearTimeout(u.doubleTapTimer);u.doubleTapTimer=null;u.zoom(u.pointX,u.pointY,u.scale==1?2:1)}else{u.doubleTapTimer=setTimeout(function(){u.doubleTapTimer=null;x=A.target;while(x.nodeType!=1){x=x.parentNode}z=document.createEvent("MouseEvents");z.initMouseEvent("click",true,true,w.view,1,A.screenX,A.screenY,A.clientX,A.clientY,w.ctrlKey,w.altKey,w.shiftKey,w.metaKey,0,null);z._fake=true;x.dispatchEvent(z)},u.options.zoom?250:0)}}u._resetPos();return}if(u.pullDownToRefresh&&u.contentReady&&u.pullDownEl.className.match("flip")){u.pullDownEl.className="iScrollPullDown loading";u.pullDownLabel.innerText=u.options.pullDownLabel[2];u.scroller.style.marginTop="0";u.offsetBottom=0;u.refresh();u.contentReady=false;u.options.onPullDown()}if(u.pullUpToRefresh&&u.contentReady&&u.pullUpEl.className.match("flip")){u.pullUpEl.className="iScrollPullUp loading";u.pullUpLabel.innerText=u.options.pullUpLabel[2];u.scroller.style.marginBottom="0";u.offsetTop=0;u.refresh();u.contentReady=false;u.options.onPullUp()}if(t<300&&u.options.momentum){r=y?u._momentum(y-u.startX,t,-u.x,u.scrollerW-u.wrapperW+u.x,u.options.bounce?u.wrapperW:0):r;m=v?u._momentum(v-u.startY,t,-u.y,(u.maxScrollY<0?u.scrollerH-u.wrapperH+u.y:0),u.options.bounce?u.wrapperH:0):m;y=u.x+r.dist;v=u.y+m.dist;if((u.x>0&&y>0)||(u.x<u.maxScrollX&&y<u.maxScrollX)){r={dist:0,time:0}}if((u.y>0&&v>0)||(u.y<u.maxScrollY&&v<u.maxScrollY)){m={dist:0,time:0}}}if(r.dist||m.dist){q=d.max(d.max(r.time,m.time),10);if(u.options.snap){s=u._snap(y,v);y=s.x;v=s.y;q=d.max(s.time,q)}u.scrollTo(y,v,q);return}if(u.options.snap){s=u._snap(u.x,u.y);if(s.x!=u.x||s.y!=u.y){u.scrollTo(s.x,s.y,s.time)}return}u._resetPos()},_resetPos:function(r){var m=this,s=m.x,q=m.y;if(m.x>=0){s=0}else{if(m.x<m.maxScrollX){s=m.maxScrollX}}if(m.y>=0||m.maxScrollY>0){q=0}else{if(m.y<m.maxScrollY){q=m.maxScrollY}}if(s==m.x&&q==m.y){if(m.moved){if(m.options.onScrollEnd){m.options.onScrollEnd.call(m)}m.moved=false}if(m.zoomed){if(m.options.onZoomEnd){m.options.onZoomEnd.call(m)}m.zoomed=false}if(m.hScrollbar&&m.options.hideScrollbar){m.hScrollbarWrapper.style.webkitTransitionDelay="300ms";m.hScrollbarWrapper.style.opacity="0"}if(m.vScrollbar&&m.options.hideScrollbar){m.vScrollbarWrapper.style.webkitTransitionDelay="300ms";m.vScrollbarWrapper.style.opacity="0"}return}if(r===undefined){r=200}if(r){m.scroller.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.0,0.33,1)";if(m.hScrollbar){m.hScrollbarIndicator.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.0,0.33,1)"}if(m.vScrollbar){m.vScrollbarIndicator.style.webkitTransitionTimingFunction="cubic-bezier(0.33,0.0,0.33,1)"}}m.scrollTo(s,q,r)},_timedScroll:function(s,r,w){var v=this,q=v.x,m=v.y,u=(new Date).getTime(),t;v._transitionTime(0);if(v.scrollInterval){clearInterval(v.scrollInterval);v.scrollInterval=null}v.scrollInterval=setInterval(function(){var x=(new Date).getTime(),z,y;if(x>=u+w){clearInterval(v.scrollInterval);v.scrollInterval=null;v._pos(s,r);v._transitionEnd();return}x=(x-u)/w-1;t=d.sqrt(1-x*x);z=(s-q)*t+q;y=(r-m)*t+m;v._pos(z,y)},20)},_transitionEnd:function(q){var m=this;if(q){q.stopPropagation()}m._unbind("webkitTransitionEnd");m._resetPos(m.returnTime);m.returnTime=0},_gestStart:function(q){var m=this;m._transitionTime(0);m.lastScale=1;if(m.options.onZoomStart){m.options.onZoomStart.call(m)}m._unbind("gesturestart");m._bind("gesturechange");m._bind("gestureend");m._bind("gesturecancel")},_gestChange:function(s){var q=this,t=q.scale*s.scale,m,u,r;q.zoomed=true;if(t<q.options.zoomMin){t=q.options.zoomMin}else{if(t>q.options.zoomMax){t=q.options.zoomMax}}r=t/q.scale;m=q.originX-q.originX*r+q.x;u=q.originY-q.originY*r+q.y;q.scroller.style.webkitTransform=b+m+"px,"+u+"px"+h+" scale("+t+")";q.lastScale=r},_gestEnd:function(r){var q=this,s=q.scale,m=q.lastScale;q.scale=s*m;if(q.scale<q.options.zoomMin+0.05){q.scale=q.options.zoomMin}else{if(q.scale>q.options.zoomMax-0.05){q.scale=q.options.zoomMax}}m=q.scale/s;q.x=q.originX-q.originX*m+q.x;q.y=q.originY-q.originY*m+q.y;q.scroller.style.webkitTransform=b+q.x+"px,"+q.y+"px"+h+" scale("+q.scale+")";setTimeout(function(){q.refresh()},0);q._bind("gesturestart");q._unbind("gesturechange");q._unbind("gestureend");q._unbind("gesturecancel")},_wheel:function(s){var r=this,q=r.x+s.wheelDeltaX/12,m=r.y+s.wheelDeltaY/12;if(q>0){q=0}else{if(q<r.maxScrollX){q=r.maxScrollX}}if(m>0){m=0}else{if(m<r.maxScrollY){m=r.maxScrollY}}r.scrollTo(q,m,0)},_momentum:function(x,r,v,m,z){var u=this,w=0.0006,s=d.abs(x)/r,q=(s*s)/(2*w),y=0,t=0;if(x>0&&q>v){t=z/(6/(q/s*w));v=v+t;u.returnTime=800/z*t+100;s=s*v/q;q=v}else{if(x<0&&q>m){t=z/(6/(q/s*w));m=m+t;u.returnTime=800/z*t+100;s=s*m/q;q=m}}q=q*(x<0?-1:1);y=s/w;return{dist:q,time:d.round(y)}},_offset:function(q,m){var s=-q.offsetLeft,r=-q.offsetTop;if(!m){return{x:s,y:r}}while(q=q.offsetParent){s-=q.offsetLeft;r-=q.offsetTop}return{x:s,y:r}},_snap:function(z,w){var u=this,t,s,v,r,q,m;v=u.pagesX.length-1;for(t=0,s=u.pagesX.length;t<s;t++){if(z>=u.pagesX[t]){v=t;break}}if(v==u.currPageX&&v>0&&u.dirX<0){v--}z=u.pagesX[v];q=d.abs(z-u.pagesX[u.currPageX]);q=q?d.abs(u.x-z)/q*500:0;u.currPageX=v;v=u.pagesY.length-1;for(t=0;t<v;t++){if(w>=u.pagesY[t]){v=t;break}}if(v==u.currPageY&&v>0&&u.dirY<0){v--}w=u.pagesY[v];m=d.abs(w-u.pagesY[u.currPageY]);m=m?d.abs(u.y-w)/m*500:0;u.currPageY=v;r=d.round(d.max(q,m))||200;return{x:z,y:w,time:r}},_bind:function(q,m){(m||this.scroller).addEventListener(q,this,false)},_unbind:function(q,m){(m||this.scroller).removeEventListener(q,this,false)},destroy:function(){var m=this;if(m.options.checkDOMChange){clearTimeout(m.DOMChangeInterval)}if(m.pullDownToRefresh){m.pullDownEl.parentNode.removeChild(m.pullDownEl)}if(m.pullUpToRefresh){m.pullUpEl.parentNode.removeChild(m.pullUpEl)}m.hScrollbar=false;m.vScrollbar=false;m._scrollbar("h");m._scrollbar("v");m.scroller.style.webkitTransform="";m._unbind("webkitTransitionEnd");m._unbind(l);m._unbind(f);m._unbind(e);m._unbind(g);m._unbind(c);if(m.options.zoom){m._unbind("gesturestart");m._unbind("gesturechange");m._unbind("gestureend");m._unbind("gesturecancel")}},refresh:function(){var u=this,w=0,v=0,t,r,s,x,q,m;if(u.pullDownToRefresh){m=u.pullDownEl.className.match("loading");if(m&&!u.contentReady){x=u.scrollerH;u.contentReady=true;u.pullDownEl.className="iScrollPullDown";u.pullDownLabel.innerText=u.options.pullDownLabel[0];u.offsetBottom=u.pullDownEl.offsetHeight;u.scroller.style.marginTop=-u.offsetBottom+"px"}else{if(!m){u.offsetBottom=u.pullDownEl.offsetHeight;u.scroller.style.marginTop=-u.offsetBottom+"px"}}}if(u.pullUpToRefresh){m=u.pullUpEl.className.match("loading");if(m&&!u.contentReady){x=u.scrollerH;u.contentReady=true;u.pullUpEl.className="iScrollPullUp";u.pullUpLabel.innerText=u.options.pullUpLabel[0];u.offsetTop=u.pullUpEl.offsetHeight;u.scroller.style.marginBottom=-u.offsetTop+"px"}else{if(!m){u.offsetTop=u.pullUpEl.offsetHeight;u.scroller.style.marginBottom=-u.offsetTop+"px"}}}u.wrapperW=u.wrapper.clientWidth;u.wrapperH=u.wrapper.clientHeight;u.scrollerW=d.round(u.scroller.offsetWidth*u.scale);u.scrollerH=d.round((u.scroller.offsetHeight-u.offsetBottom-u.offsetTop)*u.scale);u.maxScrollX=u.wrapperW-u.scrollerW;u.maxScrollY=u.wrapperH-u.scrollerH;u.dirX=0;u.dirY=0;u._transitionTime(0);u.hScroll=u.options.hScroll&&u.maxScrollX<0;u.vScroll=u.options.vScroll&&(!u.options.bounceLock&&!u.hScroll||u.scrollerH>u.wrapperH);u.hScrollbar=u.hScroll&&u.options.hScrollbar;u.vScrollbar=u.vScroll&&u.options.vScrollbar&&u.scrollerH>u.wrapperH;u._scrollbar("h");u._scrollbar("v");if(typeof u.options.snap=="string"){u.pagesX=[];u.pagesY=[];s=u.scroller.querySelectorAll(u.options.snap);for(t=0,r=s.length;t<r;t++){w=u._offset(s[t]);u.pagesX[t]=w.x<u.maxScrollX?u.maxScrollX:w.x*u.scale;u.pagesY[t]=w.y<u.maxScrollY?u.maxScrollY:w.y*u.scale}}else{if(u.options.snap){u.pagesX=[];while(w>=u.maxScrollX){u.pagesX[v]=w;w=w-u.wrapperW;v++}if(u.maxScrollX%u.wrapperW){u.pagesX[u.pagesX.length]=u.maxScrollX-u.pagesX[u.pagesX.length-1]+u.pagesX[u.pagesX.length-1]}w=0;v=0;u.pagesY=[];while(w>=u.maxScrollY){u.pagesY[v]=w;w=w-u.wrapperH;v++}if(u.maxScrollY%u.wrapperH){u.pagesY[u.pagesY.length]=u.maxScrollY-u.pagesY[u.pagesY.length-1]+u.pagesY[u.pagesY.length-1]}}}if(u.options.zoom){q=u._offset(u.wrapper,true);u.wrapperOffsetLeft=-q.x;u.wrapperOffsetTop=-q.y}if(x&&u.y==0){x=x-u.scrollerH+u.y;u.scrollTo(0,x,0)}u._resetPos()},scrollTo:function(m,t,s,r){var q=this;if(r){m=q.x-m;t=q.y-t}s=!s||(d.round(q.x)==d.round(m)&&d.round(q.y)==d.round(t))?0:s;q.moved=true;if(!q.options.HWTransition){q._timedScroll(m,t,s);return}if(s){q._bind("webkitTransitionEnd")}q._transitionTime(s);q._pos(m,t);if(!s){setTimeout(function(){q._transitionEnd()},0)}},scrollToElement:function(m,r){var q=this,s;m=m.nodeType?m:q.scroller.querySelector(m);if(!m){return}s=q._offset(m);s.x=s.x>0?0:s.x<q.maxScrollX?q.maxScrollX:s.x;s.y=s.y>0?0:s.y<q.maxScrollY?q.maxScrollY:s.y;r=r===undefined?d.max(d.abs(s.x)*2,d.abs(s.y)*2):r;q.scrollTo(s.x,s.y,r)},scrollToPage:function(r,q,t){var s=this,m,u;if(s.options.snap){r=r=="next"?s.currPageX+1:r=="prev"?s.currPageX-1:r;q=q=="next"?s.currPageY+1:q=="prev"?s.currPageY-1:q;r=r<0?0:r>s.pagesX.length-1?s.pagesX.length-1:r;q=q<0?0:q>s.pagesY.length-1?s.pagesY.length-1:q;s.currPageX=r;s.currPageY=q;m=s.pagesX[r];u=s.pagesY[q]}else{m=-s.wrapperW*r;u=-s.wrapperH*q;if(m<s.maxScrollX){m=s.maxScrollX}if(u<s.maxScrollY){u=s.maxScrollY}}s.scrollTo(m,u,t||400)},zoom:function(m,t,s){var q=this,r=s/q.scale;m=m-q.wrapperOffsetLeft-q.x;t=t-q.wrapperOffsetTop-q.y;q.x=m-m*r+q.x;q.y=t-t*r+q.y;q.scale=s;if(q.options.onZoomStart){q.options.onZoomStart.call(q)}q.refresh();q._bind("webkitTransitionEnd");q._transitionTime(200);setTimeout(function(){q.zoomed=true;q.scroller.style.webkitTransform=b+q.x+"px,"+q.y+"px"+h+" scale("+s+")"},0)}};var k="WebKitCSSMatrix" in window&&"m11" in new WebKitCSSMatrix(),j="ontouchstart" in window,i="ongesturestart" in window,a="WebKitTransitionEvent" in window,o=(/iphone|ipad/gi).test(navigator.appVersion),n=(/android/gi).test(navigator.appVersion),l="onorientationchange" in window?"orientationchange":"resize",f=j?"touchstart":"mousedown",e=j?"touchmove":"mousemove",g=j?"touchend":"mouseup",c=j?"touchcancel":"mouseup",b="translate"+(k?"3d(":"("),h=k?",0)":")",d=Math;if(typeof exports!=="undefined"){exports.iScroll=p}else{window.iScroll=p}})();
+/*!
+ * iScroll v4.1.2 ~ Copyright (c) 2011 Matteo Spinelli, http://cubiq.org
+ * Released under MIT license, http://cubiq.org/license
+ */
+
+(function(){
+var m = Math,
+	vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
+		(/firefox/i).test(navigator.userAgent) ? 'Moz' :
+		'opera' in window ? 'O' : '',
+
+	// Browser capabilities
+	has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix(),
+	hasTouch = 'ontouchstart' in window,
+	hasTransform = vendor + 'Transform' in document.documentElement.style,
+	isAndroid = (/android/gi).test(navigator.appVersion),
+	isIDevice = (/iphone|ipad/gi).test(navigator.appVersion),
+	isPlaybook = (/playbook/gi).test(navigator.appVersion),
+	hasTransitionEnd = (isIDevice || isPlaybook) && 'onwebkittransitionend' in window,
+	nextFrame = (function() {
+	    return window.requestAnimationFrame
+			|| window.webkitRequestAnimationFrame
+			|| window.mozRequestAnimationFrame
+			|| window.oRequestAnimationFrame
+			|| window.msRequestAnimationFrame
+			|| function(callback) { return setTimeout(callback, 17); }
+	})(),
+	cancelFrame = (function () {
+	    return window.cancelRequestAnimationFrame
+			|| window.webkitCancelRequestAnimationFrame
+			|| window.mozCancelRequestAnimationFrame
+			|| window.oCancelRequestAnimationFrame
+			|| window.msCancelRequestAnimationFrame
+			|| clearTimeout
+	})(),
+
+	// Events
+	RESIZE_EV = 'onorientationchange' in window ? 'orientationchange' : 'resize',
+	START_EV = hasTouch ? 'touchstart' : 'mousedown',
+	MOVE_EV = hasTouch ? 'touchmove' : 'mousemove',
+	END_EV = hasTouch ? 'touchend' : 'mouseup',
+	CANCEL_EV = hasTouch ? 'touchcancel' : 'mouseup',
+	WHEEL_EV = vendor == 'Moz' ? 'DOMMouseScroll' : 'mousewheel',
+
+	// Helpers
+	trnOpen = 'translate' + (has3d ? '3d(' : '('),
+	trnClose = has3d ? ',0)' : ')',
+
+	// Constructor
+	iScroll = function (el, options) {
+		var that = this,
+			doc = document,
+			i;
+
+		that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
+		that.wrapper.style.overflow = 'hidden';
+		that.scroller = that.wrapper.children[0];
+
+		// Default options
+		that.options = {
+			hScroll: true,
+			vScroll: true,
+			bounce: true,
+			bounceLock: false,
+			momentum: true,
+			lockDirection: true,
+			useTransform: true,
+			useTransition: false,
+
+			// Scrollbar
+			hScrollbar: true,
+			vScrollbar: true,
+			fixedScrollbar: isAndroid,
+			hideScrollbar: isIDevice,
+			fadeScrollbar: isIDevice && has3d,
+			scrollbarClass: '',
+
+			// Zoom
+			zoom: false,
+			zoomMin: 1,
+			zoomMax: 4,
+			doubleTapZoom: 2,
+
+			// Snap
+			snap: false,
+			snapThreshold: 1,
+
+			// Events
+			onRefresh: null,
+			onBeforeScrollStart: function (e) { e.preventDefault(); },
+			onScrollStart: null,
+			onBeforeScrollMove: null,
+			onScrollMove: null,
+			onBeforeScrollEnd: null,
+			onScrollEnd: null,
+			onTouchEnd: null,
+			onDestroy: null
+		};
+
+		// User defined options
+		for (i in options) that.options[i] = options[i];
+
+		// Normalize options
+		that.options.useTransform = hasTransform ? that.options.useTransform : false;
+		that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar;
+		that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar;
+		that.options.zoom = that.options.useTransform && that.options.zoom;
+		that.options.useTransition = hasTransitionEnd && that.options.useTransition;
+
+		// Set some default styles
+		that.scroller.style[vendor + 'TransitionProperty'] = that.options.useTransform ? '-' + vendor.toLowerCase() + '-transform' : 'top left';
+		that.scroller.style[vendor + 'TransitionDuration'] = '0';
+		that.scroller.style[vendor + 'TransformOrigin'] = '0 0';
+		if (that.options.useTransition) that.scroller.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+
+		if (that.options.useTransform) that.scroller.style[vendor + 'Transform'] = trnOpen + '0,0' + trnClose;
+		else that.scroller.style.cssText += ';top:0;left:0';
+
+		if (that.options.useTransition) that.options.fixedScrollbar = true;
+
+		that.refresh();
+
+		that._bind(RESIZE_EV, window);
+		that._bind(START_EV);
+		if (!hasTouch) {
+			that._bind('mouseout', that.wrapper);
+			that._bind(WHEEL_EV);
+		}
+	};
+
+// Prototype
+iScroll.prototype = {
+	enabled: true,
+	x: 0,
+	y: 0,
+	steps: [],
+	scale: 1,
+	currPageX: 0, currPageY: 0,
+	pagesX: [], pagesY: [],
+	aniTime: null,
+
+	handleEvent: function (e) {
+		var that = this;
+		switch(e.type) {
+			case START_EV: that._start(e); break;
+			case MOVE_EV: that._move(e); break;
+			case END_EV:
+			case CANCEL_EV: that._end(e); break;
+			case RESIZE_EV: that._resize(); break;
+			case WHEEL_EV: that._wheel(e); break;
+			case 'mouseout': that._mouseout(e); break;
+			case 'webkitTransitionEnd': that._transitionEnd(e); break;
+		}
+	},
+
+	_scrollbar: function (dir) {
+		var that = this,
+			doc = document,
+			bar;
+
+		if (!that[dir + 'Scrollbar']) {
+			if (that[dir + 'ScrollbarWrapper']) {
+				if (hasTransform) that[dir + 'ScrollbarIndicator'].style[vendor + 'Transform'] = '';
+				that[dir + 'ScrollbarWrapper'].parentNode.removeChild(that[dir + 'ScrollbarWrapper']);
+				that[dir + 'ScrollbarWrapper'] = null;
+				that[dir + 'ScrollbarIndicator'] = null;
+			}
+
+			return;
+		}
+
+		if (!that[dir + 'ScrollbarWrapper']) {
+			// Create the scrollbar wrapper
+			bar = doc.createElement('div');
+
+			if (that.options.scrollbarClass) bar.className = that.options.scrollbarClass + dir.toUpperCase();
+			else bar.style.cssText = 'position:absolute;z-index:100;' + (dir == 'h' ? 'height:7px;bottom:1px;left:2px;right:' + (that.vScrollbar ? '7' : '2') + 'px' : 'width:7px;bottom:' + (that.hScrollbar ? '7' : '2') + 'px;top:2px;right:1px');
+
+			bar.style.cssText += ';pointer-events:none;-' + vendor + '-transition-property:opacity;-' + vendor + '-transition-duration:' + (that.options.fadeScrollbar ? '350ms' : '0') + ';overflow:hidden;opacity:' + (that.options.hideScrollbar ? '0' : '1');
+
+			that.wrapper.appendChild(bar);
+			that[dir + 'ScrollbarWrapper'] = bar;
+
+			// Create the scrollbar indicator
+			bar = doc.createElement('div');
+			if (!that.options.scrollbarClass) {
+				bar.style.cssText = 'position:absolute;z-index:100;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.9);-' + vendor + '-background-clip:padding-box;-' + vendor + '-box-sizing:border-box;' + (dir == 'h' ? 'height:100%' : 'width:100%') + ';-' + vendor + '-border-radius:3px;border-radius:3px';
+			}
+			bar.style.cssText += ';pointer-events:none;-' + vendor + '-transition-property:-' + vendor + '-transform;-' + vendor + '-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1);-' + vendor + '-transition-duration:0;-' + vendor + '-transform:' + trnOpen + '0,0' + trnClose;
+			if (that.options.useTransition) bar.style.cssText += ';-' + vendor + '-transition-timing-function:cubic-bezier(0.33,0.66,0.66,1)';
+
+			that[dir + 'ScrollbarWrapper'].appendChild(bar);
+			that[dir + 'ScrollbarIndicator'] = bar;
+		}
+
+		if (dir == 'h') {
+			that.hScrollbarSize = that.hScrollbarWrapper.clientWidth;
+			that.hScrollbarIndicatorSize = m.max(m.round(that.hScrollbarSize * that.hScrollbarSize / that.scrollerW), 8);
+			that.hScrollbarIndicator.style.width = that.hScrollbarIndicatorSize + 'px';
+			that.hScrollbarMaxScroll = that.hScrollbarSize - that.hScrollbarIndicatorSize;
+			that.hScrollbarProp = that.hScrollbarMaxScroll / that.maxScrollX;
+		} else {
+			that.vScrollbarSize = that.vScrollbarWrapper.clientHeight;
+			that.vScrollbarIndicatorSize = m.max(m.round(that.vScrollbarSize * that.vScrollbarSize / that.scrollerH), 8);
+			that.vScrollbarIndicator.style.height = that.vScrollbarIndicatorSize + 'px';
+			that.vScrollbarMaxScroll = that.vScrollbarSize - that.vScrollbarIndicatorSize;
+			that.vScrollbarProp = that.vScrollbarMaxScroll / that.maxScrollY;
+		}
+
+		// Reset position
+		that._scrollbarPos(dir, true);
+	},
+
+	_resize: function () {
+		this.refresh();
+	},
+
+	_pos: function (x, y) {
+		x = this.hScroll ? x : 0;
+		y = this.vScroll ? y : 0;
+
+		if (this.options.useTransform) {
+			this.scroller.style[vendor + 'Transform'] = trnOpen + x + 'px,' + y + 'px' + trnClose + ' scale(' + this.scale + ')';
+		} else {
+			x = m.round(x);
+			y = m.round(y);
+			this.scroller.style.left = x + 'px';
+			this.scroller.style.top = y + 'px';
+		}
+
+		this.x = x;
+		this.y = y;
+
+		this._scrollbarPos('h');
+		this._scrollbarPos('v');
+	},
+
+	_scrollbarPos: function (dir, hidden) {
+		var that = this,
+			pos = dir == 'h' ? that.x : that.y,
+			size;
+
+		if (!that[dir + 'Scrollbar']) return;
+
+		pos = that[dir + 'ScrollbarProp'] * pos;
+
+		if (pos < 0) {
+			if (!that.options.fixedScrollbar) {
+				size = that[dir + 'ScrollbarIndicatorSize'] + m.round(pos * 3);
+				if (size < 8) size = 8;
+				that[dir + 'ScrollbarIndicator'].style[dir == 'h' ? 'width' : 'height'] = size + 'px';
+			}
+			pos = 0;
+		} else if (pos > that[dir + 'ScrollbarMaxScroll']) {
+			if (!that.options.fixedScrollbar) {
+				size = that[dir + 'ScrollbarIndicatorSize'] - m.round((pos - that[dir + 'ScrollbarMaxScroll']) * 3);
+				if (size < 8) size = 8;
+				that[dir + 'ScrollbarIndicator'].style[dir == 'h' ? 'width' : 'height'] = size + 'px';
+				pos = that[dir + 'ScrollbarMaxScroll'] + (that[dir + 'ScrollbarIndicatorSize'] - size);
+			} else {
+				pos = that[dir + 'ScrollbarMaxScroll'];
+			}
+		}
+
+		that[dir + 'ScrollbarWrapper'].style[vendor + 'TransitionDelay'] = '0';
+		that[dir + 'ScrollbarWrapper'].style.opacity = hidden && that.options.hideScrollbar ? '0' : '1';
+		that[dir + 'ScrollbarIndicator'].style[vendor + 'Transform'] = trnOpen + (dir == 'h' ? pos + 'px,0' : '0,' + pos + 'px') + trnClose;
+	},
+
+	_start: function (e) {
+		var that = this,
+			point = hasTouch ? e.touches[0] : e,
+			matrix, x, y,
+			c1, c2;
+
+		if (!that.enabled) return;
+
+		if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
+
+		if (that.options.useTransition) that._transitionTime(0);
+
+		that.moved = false;
+		that.animating = false;
+		that.zoomed = false;
+		that.distX = 0;
+		that.distY = 0;
+		that.absDistX = 0;
+		that.absDistY = 0;
+		that.dirX = 0;
+		that.dirY = 0;
+
+		// Gesture start
+		if (that.options.zoom && hasTouch && e.touches.length > 1) {
+			c1 = m.abs(e.touches[0].pageX-e.touches[1].pageX);
+			c2 = m.abs(e.touches[0].pageY-e.touches[1].pageY);
+			that.touchesDistStart = m.sqrt(c1 * c1 + c2 * c2);
+
+			that.originX = m.abs(e.touches[0].pageX + e.touches[1].pageX - that.wrapperOffsetLeft * 2) / 2 - that.x;
+			that.originY = m.abs(e.touches[0].pageY + e.touches[1].pageY - that.wrapperOffsetTop * 2) / 2 - that.y;
+		}
+
+		if (that.options.momentum) {
+			if (that.options.useTransform) {
+				// Very lame general purpose alternative to CSSMatrix
+				matrix = getComputedStyle(that.scroller, null)[vendor + 'Transform'].replace(/[^0-9-.,]/g, '').split(',');
+				x = matrix[4] * 1;
+				y = matrix[5] * 1;
+			} else {
+				x = getComputedStyle(that.scroller, null).left.replace(/[^0-9-]/g, '') * 1;
+				y = getComputedStyle(that.scroller, null).top.replace(/[^0-9-]/g, '') * 1;
+			}
+
+			if (x != that.x || y != that.y) {
+				if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+				else cancelFrame(that.aniTime);
+				that.steps = [];
+				that._pos(x, y);
+			}
+		}
+
+		that.absStartX = that.x;	// Needed by snap threshold
+		that.absStartY = that.y;
+
+		that.startX = that.x;
+		that.startY = that.y;
+		that.pointX = point.pageX;
+		that.pointY = point.pageY;
+
+		that.startTime = e.timeStamp || (new Date()).getTime();
+
+		if (that.options.onScrollStart) that.options.onScrollStart.call(that, e);
+
+		that._bind(MOVE_EV);
+		that._bind(END_EV);
+		that._bind(CANCEL_EV);
+	},
+
+	_move: function (e) {
+		var that = this,
+			point = hasTouch ? e.touches[0] : e,
+			deltaX = point.pageX - that.pointX,
+			deltaY = point.pageY - that.pointY,
+			newX = that.x + deltaX,
+			newY = that.y + deltaY,
+			c1, c2, scale,
+			timestamp = e.timeStamp || (new Date()).getTime();
+
+		if (that.options.onBeforeScrollMove) that.options.onBeforeScrollMove.call(that, e);
+
+		// Zoom
+		if (that.options.zoom && hasTouch && e.touches.length > 1) {
+			c1 = m.abs(e.touches[0].pageX - e.touches[1].pageX);
+			c2 = m.abs(e.touches[0].pageY - e.touches[1].pageY);
+			that.touchesDist = m.sqrt(c1*c1+c2*c2);
+
+			that.zoomed = true;
+
+			scale = 1 / that.touchesDistStart * that.touchesDist * this.scale;
+			if (scale < 0.5) scale = 0.5;
+			else if (scale > that.options.zoomMax) scale = that.options.zoomMax;
+			that.lastScale = scale / this.scale;
+
+			newX = this.originX - this.originX * that.lastScale + this.x,
+			newY = this.originY - this.originY * that.lastScale + this.y;
+
+			this.scroller.style[vendor + 'Transform'] = trnOpen + newX + 'px,' + newY + 'px' + trnClose + ' scale(' + scale + ')';
+
+			return;
+		}
+
+		that.pointX = point.pageX;
+		that.pointY = point.pageY;
+
+		// Slow down if outside of the boundaries
+		if (newX > 0 || newX < that.maxScrollX) {
+			newX = that.options.bounce ? that.x + (deltaX / 2) : newX >= 0 || that.maxScrollX >= 0 ? 0 : that.maxScrollX;
+		}
+		if (newY > 0 || newY < that.maxScrollY) {
+			newY = that.options.bounce ? that.y + (deltaY / 2) : newY >= 0 || that.maxScrollY >= 0 ? 0 : that.maxScrollY;
+		}
+
+		if (that.absDistX < 6 && that.absDistY < 6) {
+			that.distX += deltaX;
+			that.distY += deltaY;
+			that.absDistX = m.abs(that.distX);
+			that.absDistY = m.abs(that.distY);
+
+			return;
+		}
+
+		// Lock direction
+		if (that.options.lockDirection) {
+			if (that.absDistX > that.absDistY + 5) {
+				newY = that.y;
+				deltaY = 0;
+			} else if (that.absDistY > that.absDistX + 5) {
+				newX = that.x;
+				deltaX = 0;
+			}
+		}
+
+		that.moved = true;
+		that._pos(newX, newY);
+		that.dirX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
+		that.dirY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+
+		if (timestamp - that.startTime > 300) {
+			that.startTime = timestamp;
+			that.startX = that.x;
+			that.startY = that.y;
+		}
+
+		if (that.options.onScrollMove) that.options.onScrollMove.call(that, e);
+	},
+
+	_end: function (e) {
+		if (hasTouch && e.touches.length != 0) return;
+
+		var that = this,
+			point = hasTouch ? e.changedTouches[0] : e,
+			target, ev,
+			momentumX = { dist:0, time:0 },
+			momentumY = { dist:0, time:0 },
+			duration = (e.timeStamp || (new Date()).getTime()) - that.startTime,
+			newPosX = that.x,
+			newPosY = that.y,
+			distX, distY,
+			newDuration;
+
+		that._unbind(MOVE_EV);
+		that._unbind(END_EV);
+		that._unbind(CANCEL_EV);
+
+		if (that.options.onBeforeTouchEnd) that.options.onBeforeTouchEnd.call(that, e);
+
+		if (that.zoomed) {
+			that.scale = that.scale * that.lastScale;
+			that.x = that.originX - that.originX * that.lastScale + that.x;
+			that.y = that.originY - that.originY * that.lastScale + that.y;
+
+			that.scroller.style.webkitTransform = trnOpen + that.x + 'px,' + that.y + 'px' + trnClose + ' scale(' + that.scale + ')';
+
+			that.refresh();
+			return;
+		}
+
+		if (!that.moved) {
+			if (hasTouch) {
+				if (that.doubleTapTimer && that.options.zoom) {
+					// Double tapped
+					clearTimeout(that.doubleTapTimer);
+					that.doubleTapTimer = null;
+					that.zoom(that.pointX, that.pointY, that.scale == 1 ? that.options.doubleTapZoom : 1);
+				} else {
+					that.doubleTapTimer = setTimeout(function () {
+						that.doubleTapTimer = null;
+
+						// Find the last touched element
+						target = point.target;
+						while (target.nodeType != 1) target = target.parentNode;
+
+						if (target.tagName != 'SELECT' && target.tagName != 'INPUT' && target.tagName != 'TEXTAREA') {
+							ev = document.createEvent('MouseEvents');
+							ev.initMouseEvent('click', true, true, e.view, 1,
+								point.screenX, point.screenY, point.clientX, point.clientY,
+								e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+								0, null);
+							ev._fake = true;
+							target.dispatchEvent(ev);
+						}
+					}, that.options.zoom ? 250 : 0);
+				}
+			}
+
+			that._resetPos(200);
+
+			if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+			return;
+		}
+
+		if (duration < 300 && that.options.momentum) {
+			momentumX = newPosX ? that._momentum(newPosX - that.startX, duration, -that.x, that.scrollerW - that.wrapperW + that.x, that.options.bounce ? that.wrapperW : 0) : momentumX;
+			momentumY = newPosY ? that._momentum(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y : 0), that.options.bounce ? that.wrapperH : 0) : momentumY;
+
+			newPosX = that.x + momentumX.dist;
+			newPosY = that.y + momentumY.dist;
+
+ 			if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) momentumX = { dist:0, time:0 };
+ 			if ((that.y > 0 && newPosY > 0) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) momentumY = { dist:0, time:0 };
+		}
+
+		if (momentumX.dist || momentumY.dist) {
+			newDuration = m.max(m.max(momentumX.time, momentumY.time), 10);
+
+			// Do we need to snap?
+			if (that.options.snap) {
+				distX = newPosX - that.absStartX;
+				distY = newPosY - that.absStartY;
+				if (m.abs(distX) < that.options.snapThreshold && m.abs(distY) < that.options.snapThreshold) { that.scrollTo(that.absStartX, that.absStartY, 200); }
+				else {
+					snap = that._snap(newPosX, newPosY);
+					newPosX = snap.x;
+					newPosY = snap.y;
+					newDuration = m.max(snap.time, newDuration);
+				}
+			}
+
+			that.scrollTo(newPosX, newPosY, newDuration);
+
+			if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+			return;
+		}
+
+		// Do we need to snap?
+		if (that.options.snap) {
+			distX = newPosX - that.absStartX;
+			distY = newPosY - that.absStartY;
+			if (m.abs(distX) < that.options.snapThreshold && m.abs(distY) < that.options.snapThreshold) that.scrollTo(that.absStartX, that.absStartY, 200);
+			else {
+				snap = that._snap(that.x, that.y);
+				if (snap.x != that.x || snap.y != that.y) that.scrollTo(snap.x, snap.y, snap.time);
+			}
+
+			if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+			return;
+		}
+
+		that._resetPos(200);
+		if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+	},
+
+	_resetPos: function (time) {
+		var that = this,
+			resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
+			resetY = that.y >= 0 || that.maxScrollY > 0 ? 0 : that.y < that.maxScrollY ? that.maxScrollY : that.y;
+
+		if (resetX == that.x && resetY == that.y) {
+			if (that.moved) {
+				that.moved = false;
+				if (that.options.onScrollEnd) that.options.onScrollEnd.call(that);		// Execute custom code on scroll end
+			}
+
+			if (that.hScrollbar && that.options.hideScrollbar) {
+				if (vendor == 'webkit') that.hScrollbarWrapper.style[vendor + 'TransitionDelay'] = '300ms';
+				that.hScrollbarWrapper.style.opacity = '0';
+			}
+			if (that.vScrollbar && that.options.hideScrollbar) {
+				if (vendor == 'webkit') that.vScrollbarWrapper.style[vendor + 'TransitionDelay'] = '300ms';
+				that.vScrollbarWrapper.style.opacity = '0';
+			}
+
+			return;
+		}
+
+		that.scrollTo(resetX, resetY, time || 0);
+	},
+
+	_wheel: function (e) {
+		var that = this,
+			deltaX, deltaY;
+
+		if ('wheelDeltaX' in e) {
+			deltaX = that.x + e.wheelDeltaX / 12,
+			deltaY = that.y + e.wheelDeltaY / 12;
+		} else if ('detail' in e) {
+			deltaX = that.x - e.detail * 3,
+			deltaY = that.y - e.detail * 3;
+		} else {
+			deltaX = that.x - e.wheelDelta,
+			deltaY = that.y - e.wheelDelta;
+		}
+
+		if (deltaX > 0) deltaX = 0;
+		else if (deltaX < that.maxScrollX) deltaX = that.maxScrollX;
+
+		if (deltaY > 0) deltaY = 0;
+		else if (deltaY < that.maxScrollY) deltaY = that.maxScrollY;
+
+		that.scrollTo(deltaX, deltaY, 0);
+	},
+
+	_mouseout: function (e) {
+		var t = e.relatedTarget;
+
+		if (!t) {
+			this._end(e);
+			return;
+		}
+
+		while (t = t.parentNode) if (t == this.wrapper) return;
+
+		this._end(e);
+	},
+
+	_transitionEnd: function (e) {
+		var that = this;
+
+		if (e.target != that.scroller) return;
+
+		that._unbind('webkitTransitionEnd');
+
+		that._startAni();
+	},
+
+
+	/**
+	 *
+	 * Utilities
+	 *
+	 */
+	_startAni: function () {
+		var that = this,
+			startX = that.x, startY = that.y,
+			startTime = (new Date).getTime(),
+			step, easeOut;
+
+		if (that.animating) return;
+
+		if (!that.steps.length) {
+			that._resetPos(400);
+			return;
+		}
+
+		step = that.steps.shift();
+
+		if (step.x == startX && step.y == startY) step.time = 0;
+
+		that.animating = true;
+		that.moved = true;
+
+		if (that.options.useTransition) {
+			that._transitionTime(step.time);
+			that._pos(step.x, step.y);
+			that.animating = false;
+			if (step.time) that._bind('webkitTransitionEnd');
+			return;
+		}
+
+		(function animate () {
+			var now = (new Date).getTime(),
+				newX, newY;
+
+			if (now >= startTime + step.time) {
+				that._pos(step.x, step.y);
+				that.animating = false;
+				if (that.options.onAnimationEnd) that.options.onAnimationEnd.call(that);			// Execute custom code on animation end
+				that._startAni();
+				return;
+			}
+
+			now = (now - startTime) / step.time - 1;
+			easeOut = m.sqrt(1 - now * now);
+			newX = (step.x - startX) * easeOut + startX;
+			newY = (step.y - startY) * easeOut + startY;
+			that._pos(newX, newY);
+			if (that.animating) that.aniTime = nextFrame(animate);
+		})();
+	},
+
+	_transitionTime: function (time) {
+		var that = this;
+
+		time += 'ms';
+		that.scroller.style[vendor + 'TransitionDuration'] = time;
+
+		if (that.hScrollbar) that.hScrollbarIndicator.style[vendor + 'TransitionDuration'] = time;
+		if (that.vScrollbar) that.vScrollbarIndicator.style[vendor + 'TransitionDuration'] = time;
+	},
+
+	_momentum: function (dist, time, maxDistUpper, maxDistLower, size) {
+		var deceleration = 0.0006,
+			speed = m.abs(dist) / time,
+			newDist = (speed * speed) / (2 * deceleration),
+			newTime = 0, outsideDist = 0;
+
+		// Proportinally reduce speed if we are outside of the boundaries
+		if (dist > 0 && newDist > maxDistUpper) {
+			outsideDist = size / (6 / (newDist / speed * deceleration));
+			maxDistUpper = maxDistUpper + outsideDist;
+			speed = speed * maxDistUpper / newDist;
+			newDist = maxDistUpper;
+		} else if (dist < 0 && newDist > maxDistLower) {
+			outsideDist = size / (6 / (newDist / speed * deceleration));
+			maxDistLower = maxDistLower + outsideDist;
+			speed = speed * maxDistLower / newDist;
+			newDist = maxDistLower;
+		}
+
+		newDist = newDist * (dist < 0 ? -1 : 1);
+		newTime = speed / deceleration;
+
+		return { dist: newDist, time: m.round(newTime) };
+	},
+
+	_offset: function (el) {
+		var left = -el.offsetLeft,
+			top = -el.offsetTop;
+
+		while (el = el.offsetParent) {
+			left -= el.offsetLeft;
+			top -= el.offsetTop;
+		}
+
+		return { left: left, top: top };
+	},
+
+	_snap: function (x, y) {
+		var that = this,
+			i, l,
+			page, time,
+			sizeX, sizeY;
+
+		// Check page X
+		page = that.pagesX.length - 1;
+		for (i=0, l=that.pagesX.length; i<l; i++) {
+			if (x >= that.pagesX[i]) {
+				page = i;
+				break;
+			}
+		}
+		if (page == that.currPageX && page > 0 && that.dirX < 0) page--;
+		x = that.pagesX[page];
+		sizeX = m.abs(x - that.pagesX[that.currPageX]);
+		sizeX = sizeX ? m.abs(that.x - x) / sizeX * 500 : 0;
+		that.currPageX = page;
+
+		// Check page Y
+		page = that.pagesY.length-1;
+		for (i=0; i<page; i++) {
+			if (y >= that.pagesY[i]) {
+				page = i;
+				break;
+			}
+		}
+		if (page == that.currPageY && page > 0 && that.dirY < 0) page--;
+		y = that.pagesY[page];
+		sizeY = m.abs(y - that.pagesY[that.currPageY]);
+		sizeY = sizeY ? m.abs(that.y - y) / sizeY * 500 : 0;
+		that.currPageY = page;
+
+		// Snap with constant speed (proportional duration)
+		time = m.round(m.max(sizeX, sizeY)) || 200;
+
+		return { x: x, y: y, time: time };
+	},
+
+	_bind: function (type, el, bubble) {
+		(el || this.scroller).addEventListener(type, this, !!bubble);
+	},
+
+	_unbind: function (type, el, bubble) {
+		(el || this.scroller).removeEventListener(type, this, !!bubble);
+	},
+
+
+	/**
+	 *
+	 * Public methods
+	 *
+	 */
+	destroy: function () {
+		var that = this;
+
+		that.scroller.style[vendor + 'Transform'] = '';
+
+		// Remove the scrollbars
+		that.hScrollbar = false;
+		that.vScrollbar = false;
+		that._scrollbar('h');
+		that._scrollbar('v');
+
+		// Remove the event listeners
+		that._unbind(RESIZE_EV);
+		that._unbind(START_EV);
+		that._unbind(MOVE_EV);
+		that._unbind(END_EV);
+		that._unbind(CANCEL_EV);
+
+		if (that.options.hasTouch) {
+			that._unbind('mouseout', that.wrapper);
+			that._unbind(WHEEL_EV);
+		}
+
+		if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+
+		if (that.options.onDestroy) that.options.onDestroy.call(that);
+	},
+
+	refresh: function () {
+		var that = this,
+			offset,
+			pos = 0,
+			page = 0;
+
+		if (that.scale < that.options.zoomMin) that.scale = that.options.zoomMin;
+		that.wrapperW = that.wrapper.clientWidth || 1;
+		that.wrapperH = that.wrapper.clientHeight || 1;
+
+		that.scrollerW = m.round(that.scroller.offsetWidth * that.scale);
+		that.scrollerH = m.round(that.scroller.offsetHeight * that.scale);
+		that.maxScrollX = that.wrapperW - that.scrollerW;
+		that.maxScrollY = that.wrapperH - that.scrollerH;
+		that.dirX = 0;
+		that.dirY = 0;
+
+		that.hScroll = that.options.hScroll && that.maxScrollX < 0;
+		that.vScroll = that.options.vScroll && (!that.options.bounceLock && !that.hScroll || that.scrollerH > that.wrapperH);
+
+		that.hScrollbar = that.hScroll && that.options.hScrollbar;
+		that.vScrollbar = that.vScroll && that.options.vScrollbar && that.scrollerH > that.wrapperH;
+
+		offset = that._offset(that.wrapper);
+		that.wrapperOffsetLeft = -offset.left;
+		that.wrapperOffsetTop = -offset.top;
+
+		// Prepare snap
+		if (typeof that.options.snap == 'string') {
+			that.pagesX = [];
+			that.pagesY = [];
+			els = that.scroller.querySelectorAll(that.options.snap);
+			for (i=0, l=els.length; i<l; i++) {
+				pos = that._offset(els[i]);
+				pos.left += that.wrapperOffsetLeft;
+				pos.top += that.wrapperOffsetTop;
+				that.pagesX[i] = pos.left < that.maxScrollX ? that.maxScrollX : pos.left * that.scale;
+				that.pagesY[i] = pos.top < that.maxScrollY ? that.maxScrollY : pos.top * that.scale;
+			}
+		} else if (that.options.snap) {
+			that.pagesX = [];
+			while (pos >= that.maxScrollX) {
+				that.pagesX[page] = pos;
+				pos = pos - that.wrapperW;
+				page++;
+			}
+			if (that.maxScrollX%that.wrapperW) that.pagesX[that.pagesX.length] = that.maxScrollX - that.pagesX[that.pagesX.length-1] + that.pagesX[that.pagesX.length-1];
+
+			pos = 0;
+			page = 0;
+			that.pagesY = [];
+			while (pos >= that.maxScrollY) {
+				that.pagesY[page] = pos;
+				pos = pos - that.wrapperH;
+				page++;
+			}
+			if (that.maxScrollY%that.wrapperH) that.pagesY[that.pagesY.length] = that.maxScrollY - that.pagesY[that.pagesY.length-1] + that.pagesY[that.pagesY.length-1];
+		}
+
+		// Prepare the scrollbars
+		that._scrollbar('h');
+		that._scrollbar('v');
+
+		that.scroller.style[vendor + 'TransitionDuration'] = '0';
+
+		that._resetPos(200);
+	},
+
+	scrollTo: function (x, y, time, relative) {
+		var that = this,
+			step = x,
+			i, l;
+
+		that.stop();
+
+		if (!step.length) step = [{ x: x, y: y, time: time, relative: relative }];
+
+		for (i=0, l=step.length; i<l; i++) {
+			if (step[i].relative) { step[i].x = that.x - step[i].x; step[i].y = that.y - step[i].y; }
+			that.steps.push({ x: step[i].x, y: step[i].y, time: step[i].time || 0 });
+		}
+
+		that._startAni();
+	},
+
+	scrollToElement: function (el, time) {
+		var that = this, pos;
+		el = el.nodeType ? el : that.scroller.querySelector(el);
+		if (!el) return;
+
+		pos = that._offset(el);
+		pos.left += that.wrapperOffsetLeft;
+		pos.top += that.wrapperOffsetTop;
+
+		pos.left = pos.left > 0 ? 0 : pos.left < that.maxScrollX ? that.maxScrollX : pos.left;
+		pos.top = pos.top > 0 ? 0 : pos.top < that.maxScrollY ? that.maxScrollY : pos.top;
+		time = time === undefined ? m.max(m.abs(pos.left)*2, m.abs(pos.top)*2) : time;
+
+		that.scrollTo(pos.left, pos.top, time);
+	},
+
+	scrollToPage: function (pageX, pageY, time) {
+		var that = this, x, y;
+
+		if (that.options.snap) {
+			pageX = pageX == 'next' ? that.currPageX+1 : pageX == 'prev' ? that.currPageX-1 : pageX;
+			pageY = pageY == 'next' ? that.currPageY+1 : pageY == 'prev' ? that.currPageY-1 : pageY;
+
+			pageX = pageX < 0 ? 0 : pageX > that.pagesX.length-1 ? that.pagesX.length-1 : pageX;
+			pageY = pageY < 0 ? 0 : pageY > that.pagesY.length-1 ? that.pagesY.length-1 : pageY;
+
+			that.currPageX = pageX;
+			that.currPageY = pageY;
+			x = that.pagesX[pageX];
+			y = that.pagesY[pageY];
+		} else {
+			x = -that.wrapperW * pageX;
+			y = -that.wrapperH * pageY;
+			if (x < that.maxScrollX) x = that.maxScrollX;
+			if (y < that.maxScrollY) y = that.maxScrollY;
+		}
+
+		that.scrollTo(x, y, time || 400);
+	},
+
+	disable: function () {
+		this.stop();
+		this._resetPos(0);
+		this.enabled = false;
+
+		// If disabled after touchstart we make sure that there are no left over events
+		this._unbind(MOVE_EV);
+		this._unbind(END_EV);
+		this._unbind(CANCEL_EV);
+	},
+
+	enable: function () {
+		this.enabled = true;
+	},
+
+	stop: function () {
+		if (this.options.useTransition) this._unbind('webkitTransitionEnd');
+		else cancelFrame(this.aniTime);
+		this.steps = [];
+		this.moved = false;
+		this.animating = false;
+	},
+
+	zoom: function (x, y, scale, time) {
+		var that = this,
+			relScale = scale / that.scale;
+
+		if (!that.options.useTransform) return;
+
+		time = (time || 200) + 'ms'
+		x = x - that.wrapperOffsetLeft - that.x;
+		y = y - that.wrapperOffsetTop - that.y;
+		that.x = x - x * relScale + that.x;
+		that.y = y - y * relScale + that.y;
+
+		that.scale = scale;
+
+		that.scroller.style[vendor + 'TransitionDuration'] = time;
+		that.scroller.style[vendor + 'Transform'] = trnOpen + that.x + 'px,' + that.y + 'px' + trnClose + ' scale(' + scale + ')';
+
+		that.refresh();
+	}
+};
+
+if (typeof exports !== 'undefined') exports.iScroll = iScroll;
+else window.iScroll = iScroll;
+
+})();
