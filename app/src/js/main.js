@@ -356,9 +356,6 @@ $(document).ready(function(){
 
 		$(apiSocket).bind({
 			open: function() {
-				/*apiSocket.send('/api/subscribe?source=console&key=' + generateKey('console'));
-				apiSocket.send('/api/subscribe?source=chat&key=' + generateKey('chat'));
-				apiSocket.send('/api/subscribe?source=connections&key=' + generateKey('connections'));*/
 				apiSocket.send('/api/subscribe?source=all&key=' + generateKey('all'));
 			},
 

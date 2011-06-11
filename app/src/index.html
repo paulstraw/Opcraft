@@ -6,7 +6,7 @@
 		<meta name="description" content="">
 		<meta name="designer" content="Paul Straw">
 		<meta name="developer" content="Paul Straw">
-		<meta name="viewport" content="width=device-width; initial-scale=1 maximum-scale=1">
+		<meta name="viewport" content="width=device-width initial-scale=1 maximum-scale=1">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 326dpi)" href="img/icon-114.png">
@@ -59,27 +59,35 @@
 					</li>
 					<li>
 						Set Time
-						<select id="newTime">
-							<option value="23500">Dawn</option>
-							<option value="0" selected>Day</option>
-							<option value="12000">Dusk</option>
-							<option value="15000">Night</option>
-						</select>
-						<button data-command="setTime" data-method="runConsoleCommand">Set</button>
+						<div class="tools">
+							<select id="newTime">
+								<option value="23500">Dawn</option>
+								<option value="0" selected>Day</option>
+								<option value="12000">Dusk</option>
+								<option value="15000">Night</option>
+							</select>
+							<button data-command="setTime" data-method="runConsoleCommand">Set</button>
+						</div>
 					</li>
 					<li>
 						Map Saving
-						<button data-method="saveOff">Disable</button>
-						<button data-method="saveOn">Enable</button>
-						<button data-method="saveMap">Save Now</button>
+						<div class="tools">
+							<button data-method="saveOff">Disable</button>
+							<button data-method="saveOn">Enable</button>
+							<button data-method="saveMap">Save Now</button>
+						</div>
 					</li>
 					<li>
 						Reload Server
-						<button id="reloadServer" data-method="reloadServer">Reload</button>
+						<div class="tools">
+							<button id="reloadServer" data-method="reloadServer">Reload</button>
+						</div>
 					</li>
 					<li>
 						Clear JSONAPI Credentials
-						<button id="clearCredentials" data-method="clearCredentials">Clear</button>
+						<div class="tools">
+							<button id="clearCredentials" data-method="clearCredentials">Clear</button>
+						</div>
 				</ul>
 			</div>
 		</script>
