@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="description" content="">
+		<meta name="designer" content="Paul Straw">
+		<meta name="developer" content="Paul Straw">
+		<meta name="viewport" content="width=device-width initial-scale=1 maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 326dpi)" href="img/icon-114.png">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 132dpi)" href="img/icon-72.png">
+		<link rel="apple-touch-icon-precomposed" media="screen and (resolution: 163dpi)" href="img/icon-57.png">
+
+		<title>Opcraft</title>
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+		<link rel="shortcut icon" href="img/favicon.png">
+		<link rel="stylesheet" media="screen, projection" href="screen.css">
+
+		<script src="opcraft.js"></script>
+	</head>
+
+	<body>
+		<header>
+			<h1></h1>
+		</header>
+
+		<div id="content">
+			<button onclick="delete localStorage.mcApiUser; delete localStorage.mcApiPass">Looks like there was a problem.<br>Click here to try entering your server info again</button>
+		</div>
+
+		<footer>
+			<ul>
+				<li class="Server">Server</li>
+				<li class="Chat">Chat</li>
+				<li class="Players">Players</li>
+				<li class="Give">Give</li>
+			</ul>
+		</footer>
+
+		<script type="text/template" id="tmplServer">
+			<div id="scroller">
+				<ul id="serverCommands">
+					<li id="version">
+						<%= version %>
+					</li>
+					<li>
+						Set Time
+						<div class="tools">
+							<select id="newTime">
+								<option value="23500">Dawn</option>
+								<option value="0" selected>Day</option>
+								<option value="12000">Dusk</option>
+								<option value="15000">Night</option>
+							</select>
+							<button data-command="setTime" data-method="runConsoleCommand">Set</button>
+						</div>
+					</li>
+					<li>
+						Map Saving
+						<div class="tools">
+							<button data-method="saveOff">Disable</button>
+							<button data-method="saveOn">Enable</button>
+							<button data-method="saveMap">Save Now</button>
+						</div>
+					</li>
+					<li>
+						Reload Server
+						<div class="tools">
+							<button id="reloadServer" data-method="reloadServer">Reload</button>
+						</div>
+					</li>
+					<li>
+						Clear JSONAPI Credentials
+						<div class="tools">
+							<button id="clearCredentials" data-method="clearCredentials">Clear</button>
+						</div>
+				</ul>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmplChat">
+			<div>
+				<div id="scroller">
+					<ul id="chatHistory">
+
+					</ul>
+				</div>
+				<div id="chatBox">
+					<input type="text" placeholder="Chat or /cmd">
+				</div>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmplPlayers">
+			<div id="scroller">
+				<ul>
+
+				</ul>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmplPlayer">
+			<li data-playerName="<%= player.name %>">
+				<section class="player group">
+					<div class="canvasHolder"></div>
+					<span class="name"><%= player.name %></span>
+				</section>
+				<section class="actions">
+					<button data-opts="<%= player.name %>" data-method="opPlayer">Op</button>
+					<button data-opts="<%= player.name %>" data-method="deopPlayer">Deop</button>
+					<button data-opts="<%= player.name %>" data-method="teleport">Teleport…</button>
+					<button data-opts="<%= player.name %>" data-method="kickPlayer">Kick</button>
+				</section>
+			</li>
+		</script>
+
+		<script type="text/template" id="tmplGive">
+			<div>
+				<div class="filter">
+					<input type="search" placeholder="Filter Items…">
+					<button id="repeatGive" data-method="givePlayerItemWithData">Repeat Give</button>
+				</div>
+				<div id="scroller">
+					<ul>
+						<% for (item in items) { %>
+							<li<%= items[item].special ? ' class="' + items[item].special + '"' : '' %> data-value="<%= items[item].value %>" data-damage="<%= items[item].damage ? items[item].damage : 0 %>">
+								<%= items[item].name %>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+		</script>
+
+		<script type="text/template" id="tmplLoginForm">
+			<form class="fancy">
+				<label>Host</label>
+				<input type="text" id="host" placeholder="Server name/IP">
+
+				<label>Username</label>
+				<input type="text" id="user" placeholder="JSONAPI username">
+
+				<label>Password</label>
+				<input type="password" id="pass" placeholder="JSONAPI password">
+
+				<label>Salt</label>
+				<input type="password" id="salt" placeholder="Leave blank if default">
+
+				<label>Port</label>
+				<input type="tel" id="port" placeholder="Leave blank if default">
+
+				<input type="submit" value="Log In">
+			</form>
+		</script>
+
+		<script type="text/template" id="tmplGivePrompt">
+			<form class="fancy">
+				<label>Give <%= itemName %> to</label>
+				<select id="giveToWho">
+					<% for (player in players) { %>
+						<option><%= players[player].name %></option>
+					<% } %>
+				</select>
+
+				<label>How many?</label>
+				<select id="howMany">
+					<option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option><option>21</option><option>22</option><option>23</option><option>24</option><option>25</option><option>26</option><option>27</option><option>28</option><option>29</option><option>30</option><option>31</option><option>32</option><option>33</option><option>34</option><option>35</option><option>36</option><option>37</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option><option>45</option><option>46</option><option>47</option><option>48</option><option>49</option><option>50</option><option>51</option><option>52</option><option>53</option><option>54</option><option>55</option><option>56</option><option>57</option><option>58</option><option>59</option><option>60</option><option>61</option><option>62</option><option>63</option><option>64</option><option>65</option><option>66</option><option>67</option><option>68</option><option>69</option><option>70</option><option>71</option><option>72</option><option>73</option><option>74</option><option>75</option><option>76</option><option>77</option><option>78</option><option>79</option><option>80</option><option>81</option><option>82</option><option>83</option><option>84</option><option>85</option><option>86</option><option>87</option><option>88</option><option>89</option><option>90</option><option>91</option><option>92</option><option>93</option><option>94</option><option>95</option><option>96</option><option>97</option><option>98</option><option>99</option><option>100</option><option>101</option><option>102</option><option>103</option><option>104</option><option>105</option><option>106</option><option>107</option><option>108</option><option>109</option><option>110</option><option>111</option><option>112</option><option>113</option><option>114</option><option>115</option><option>116</option><option>117</option><option>118</option><option>119</option><option>120</option><option>121</option><option>122</option><option>123</option><option>124</option><option>125</option><option>126</option><option>127</option><option>128</option>
+				</select>
+
+				<button id="closeButton">Cancel</button>
+				<input type="submit" value="Give Item">
+			</form>
+		</script>
+	</body>
+</html>
